@@ -13,8 +13,21 @@ const app = express();
 // Définition du port du serveur (utilise celui de l'environnement ou 3000 par défaut)
 const PORT = process.env.PORT || 3000;
 
-// On utilise MariaDB
-mariadb.createConnection({host: "localhost", user: "root", password: "1234"})
+// Identifiant et adresse de la base de données
+const DB_HOST = process.env.DB_HOST || 'localhost'; // on utilise localhost en fallback
+const DB_USERNAME = process.env.DB_USERNAME;
+const DB_PASSWORD = process.env.DB_PASSWORD;
+
+// Vérification identifiant/mot de passe de la base de données
+if(!DB_PASSWORD){
+    throw new Error("DB_PASSWORD non défini");
+}
+if(!DB_USERNAME){
+    throw new Error("DB_USERNAME non défini");
+}
+
+// On accède à la base de données MariaDB
+mariadb.createConnection({host: DB_HOST, user: DB_USERNAME, password: DB_PASSWORD})
     .then((connection) => {
         return connection.query(`CREATE DATABASE IF NOT EXISTS tdapi;`)
             .then(() => connection.query(`USE tdapi;`))
